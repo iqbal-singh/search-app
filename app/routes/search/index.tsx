@@ -1,14 +1,12 @@
+import { TextField } from "@mui/material";
+import { Form, useSearchParams, useSubmit } from "@remix-run/react";
 
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import type { LoaderFunction } from "@remix-run/node";
-import type { Query } from "~/lib/query-lang/parser";
-
-import { parse,  PeggySyntaxError } from "~/lib/query-lang/parser";
-
-import SearchInputField from "~/components/SearchInputField";
-import QueryBuilder from "~/components/QueryBuilder";
+import type { ParserResult } from "~/lib/query-lang/parser";
+import { parse, PeggySyntaxError } from "~/lib/query-lang/parser";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -18,24 +16,21 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ query, ast: null, results: [] }, 200);
   }
 
-  let ast: Query | null;
+  let ast: ParserResult;
 
   try {
-
     ast = parse(query, {
       grammarSource: "./query-lang-parser/grammar.peggy",
     });
 
-    
     // search here
     // transform ast
-
+    
   } catch (e: unknown) {
     let errorMessage = "";
 
     if (e instanceof PeggySyntaxError) {
       errorMessage = e.format([
-
         { grammarSource: "./query-lang-parser/grammar.peggy", text: query },
       ]);
     } else if (e instanceof Error) {
@@ -46,29 +41,34 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ query, ast: null, results: [], errorMessage }, 400);
   }
 
-  // return json({}, 500);
-
-  return json({ query, ast , results: [] }, 200);
+  return json({ query, ast, results: [] }, 200);
 };
 
 export default function Index() {
   const data = useLoaderData();
 
+  const submit = useSubmit();
+  const [searchParams] = useSearchParams();
+  const query = searchParams?.get("query")?.trim();
+
   return (
-    <div className="m-2  bg-white p-2">
-      <div className="">
-        <SearchInputField />
-      </div>
+    <>
+      <Form method="get">
+        <TextField
+          fullWidth
+          size="small"
+          name="query"
+          className=""
+          type="text"
+          defaultValue={query ?? ""}
+          onChange={(e) => submit(e.currentTarget.form)}
+          placeholder="(req.status < 299 AND name = vaaa) OR uuid = 1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
+        />
+      </Form>
 
-      {data?.errorMessage && (
-        <pre className="my-3 overflow-auto rounded-lg bg-red-200 p-2 text-xs">
-          {data?.errorMessage}
-        </pre>
-      )}
+      {data?.errorMessage && <pre className="">{data.errorMessage}</pre>}
 
-      <div className="my-3">
-        <QueryBuilder query={data?.ast ?? {}} />
-      </div>
-    </div>
+      {data.ast && <pre className="">{JSON.stringify(data.ast, null, 2)}</pre>}
+    </>
   );
 }

@@ -9,7 +9,8 @@ import {
 } from "@remix-run/react";
 
 export const links: LinksFunction = () => [
-  //{ rel: "stylesheet", href: tailwind },
+  { rel: "stylesheet", href: "https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" },
+  { rel: "stylesheet", href: "https://fonts.googleapis.com/icon?family=Material+Icons" },
 ];
 
 export const meta: MetaFunction = () => ({

@@ -1,13 +1,13 @@
 
 //TODO
 import { parse } from "./parser";
-import type { Query } from "./parser";
+import type { ParserResult } from "./parser";
 
 const query =
   '123 OR vb < 412 AND x = 23123 AND v = 23 OR v = "asdasdsa asdasd \\" asd"';
 
 
-const expectedResult: Query = {
+const expectedResult: ParserResult = {
   type: "Expression",
   leftOperand: {
     type: "Expression",
@@ -69,3 +69,5 @@ const expectedResult: Query = {
   operator: "OR",
 };
 
+
+console.log(JSON.stringify(parse(query)) === JSON.stringify(expectedResult));

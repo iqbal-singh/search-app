@@ -24,7 +24,7 @@ export type FieldOperator = ":" | "<=" | ">=" | "=" | "!=" | "<" | ">";
  * Specifies the field to search in. It can contain a fieldName and fieldOperator. 
  * if not provided it means field/value combination is not specified.
  */
-export type Field = {
+type Field = {
   fieldName: string | null;
   fieldOperator: FieldOperator | null;
 };
@@ -33,7 +33,7 @@ export type Field = {
  * Represents a single term or a field/value combination to search for.
  * It contains the field/value combination and the term being searched for.
  */
-export type Value = Field & {
+type Value = Field & {
   type: "Value";
   term: string;
 };
@@ -41,7 +41,7 @@ export type Value = Field & {
 /**
  * Represents a combination of two values or expressions with a binary operator.
  */
-export type Expression = {
+type Expression = {
   type: "Expression";
   leftOperand?: Value;
   rightOperand?: Value;
@@ -52,13 +52,18 @@ export type Expression = {
 /**
  * Represents the parsed input query.
  */
-export type Query = {
+type Query = {
   type: "Value" | "Expression";
   leftOperand?: Query;
   rightOperand?: Query;
   value?: Value;
   operator?: ExpressionBinaryOperator;
 };
+
+/**
+ * Represents the parsed input query AST.
+ */
+export type ParserResult = typeof Query;
 
 
 // --------------------------------
