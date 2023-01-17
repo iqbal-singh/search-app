@@ -3,7 +3,7 @@ import {
   Form,
   useLoaderData,
   useSearchParams,
-  useSubmit
+  useSubmit,
 } from "@remix-run/react";
 
 import type { LoaderFunction } from "@remix-run/node";
@@ -11,6 +11,7 @@ import type { AST } from "~/lib/query-lang/parser";
 import { parse, PeggySyntaxError } from "~/lib/query-lang/parser";
 
 import { TextField } from "@mui/material";
+import QueryBuilder from "~/query-builder/QueryBuilder";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -48,7 +49,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function Index() {
-  const data = useLoaderData();
+  const { ast, errorMessage } = useLoaderData();
 
   const submit = useSubmit();
   const [searchParams] = useSearchParams();
@@ -68,8 +69,10 @@ export default function Index() {
           placeholder="(req.status < 299 AND name = vaaa) OR uuid = 1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
         />
       </Form>
-      {data?.errorMessage && <pre className="">{data.errorMessage}</pre>}
-      {data.ast && <pre className="">{JSON.stringify(data.ast, null, 2)}</pre>}
+      {errorMessage && <pre className="">{errorMessage}</pre>}
+
+      <QueryBuilder node={ast} />
+      {/* {ast && <pre className="">{JSON.stringify(data.ast, null, 2)}</pre>} */}
     </>
   );
 }

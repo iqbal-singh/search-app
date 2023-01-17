@@ -1,22 +1,60 @@
-import { useEffect, useState } from "react";
+import { styled } from "@mui/system";
+import { Box, Chip, Container } from "@mui/material";
 
 import type {
   FieldOperator,
   ExpressionBinaryOperator,
+  AST,
 } from "~/lib/query-lang/parser";
 
-
 const FIELD_OPERATORS: FieldOperator[] = ["=", "!=", ":", "<", ">", "<=", ">="];
-const BOOL_OPERATORS: ExpressionBinaryOperator[] = ["AND", "OR"];  
+const BINARY_OPERATORS: ExpressionBinaryOperator[] = ["AND", "OR"];
 
+type QueryBuilderProps = {
+  node: AST | undefined;
+};
 
-function QueryBuilder() {
-    
+const ValueChip = styled(Chip)({
+  marginRight: 12
+});
+
+const ExpressionChip = styled(Chip)({
+  marginRight:12
+});
+
+function QueryBuilder({ node }: QueryBuilderProps) {
+  if (!node) {
+    return null;
+  }
+
+  if (node.type === "Value") {
+    const { value } = node;
+    const { term, fieldName, fieldOperator } = value!;
     return (
-      <div>
-     
-      </div>
+      <ValueChip
+        clickable
+        variant="outlined"
+        label={
+          <>
+            {fieldName || ""} <b>{fieldOperator || ""}</b> {term || ""}
+          </>
+        }
+      />
     );
   }
-  
-  export default QueryBuilder;
+
+  if (node.type === "Expression") {
+    const { leftOperand, rightOperand, operator } = node;
+    return (
+      <>
+        <QueryBuilder node={leftOperand} />
+        <ExpressionChip color="primary" variant="filled" label={operator} />
+        <QueryBuilder node={rightOperand} />
+      </>
+    );
+  }
+
+  return null;
+}
+
+export default QueryBuilder;
