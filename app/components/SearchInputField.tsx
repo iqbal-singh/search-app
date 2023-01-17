@@ -9,7 +9,7 @@ export default function SearchInputField() {
     <Form method="get">
       <input
         name="query"
-        className="w-full rounded-lg border px-4 py-3 caret-blue-500 shadow-lg focus:outline-sky-600"
+        className=""
         type="text"
         defaultValue={query ?? ""}
         onChange={(e) => submit(e.currentTarget.form)}
