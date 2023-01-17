@@ -16,12 +16,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ query, ast: null, results: [] }, 200);
   }
 
-  let ast: AST;
+  let ast;
 
   try {
     ast = parse(query, {
       grammarSource: "./query-lang-parser/grammar.peggy",
-    }) as AST;
+    });
 
     // search here
     // transform ast

@@ -253,7 +253,7 @@ export interface Cached {
   result: any;
 }
 
-function peg$parse(input: string, options?: ParseOptions) {
+function peg$parse(input: string, options?: ParseOptions): AST {
   options = options !== undefined ? options : {};
 
   const peg$FAILED: Readonly<any> = {};
