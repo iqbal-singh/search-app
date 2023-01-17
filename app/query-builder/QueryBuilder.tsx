@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import type {
   FieldOperator,
   ExpressionBinaryOperator,
-  ParserResult,
 } from "~/lib/query-lang/parser";
 
 

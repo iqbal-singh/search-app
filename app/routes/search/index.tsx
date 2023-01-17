@@ -1,12 +1,16 @@
-import { TextField } from "@mui/material";
-import { Form, useSearchParams, useSubmit } from "@remix-run/react";
-
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  useLoaderData,
+  useSearchParams,
+  useSubmit
+} from "@remix-run/react";
 
 import type { LoaderFunction } from "@remix-run/node";
 import type { AST } from "~/lib/query-lang/parser";
 import { parse, PeggySyntaxError } from "~/lib/query-lang/parser";
+
+import { TextField } from "@mui/material";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
@@ -16,7 +20,7 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ query, ast: null, results: [] }, 200);
   }
 
-  let ast;
+  let ast: AST;
 
   try {
     ast = parse(query, {
@@ -25,7 +29,6 @@ export const loader: LoaderFunction = async ({ request }) => {
 
     // search here
     // transform ast
-    
   } catch (e: unknown) {
     let errorMessage = "";
 
