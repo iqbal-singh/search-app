@@ -5,7 +5,7 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import type { LoaderFunction } from "@remix-run/node";
-import type { ParserResult } from "~/lib/query-lang/parser";
+import type { AST } from "~/lib/query-lang/parser";
 import { parse, PeggySyntaxError } from "~/lib/query-lang/parser";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -16,12 +16,12 @@ export const loader: LoaderFunction = async ({ request }) => {
     return json({ query, ast: null, results: [] }, 200);
   }
 
-  let ast: ParserResult;
+  let ast: AST;
 
   try {
     ast = parse(query, {
       grammarSource: "./query-lang-parser/grammar.peggy",
-    });
+    }) as AST;
 
     // search here
     // transform ast
@@ -65,9 +65,7 @@ export default function Index() {
           placeholder="(req.status < 299 AND name = vaaa) OR uuid = 1b9d6bcd-bbfd-4b2d-9b5d-ab8dfbbd4bed"
         />
       </Form>
-
       {data?.errorMessage && <pre className="">{data.errorMessage}</pre>}
-
       {data.ast && <pre className="">{JSON.stringify(data.ast, null, 2)}</pre>}
     </>
   );

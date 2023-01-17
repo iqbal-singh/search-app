@@ -24,7 +24,7 @@ export type FieldOperator = ":" | "<=" | ">=" | "=" | "!=" | "<" | ">";
  * Specifies the field to search in. It can contain a fieldName and fieldOperator. 
  * if not provided it means field/value combination is not specified.
  */
-type Field = {
+export type Field = {
   fieldName: string | null;
   fieldOperator: FieldOperator | null;
 };
@@ -33,45 +33,22 @@ type Field = {
  * Represents a single term or a field/value combination to search for.
  * It contains the field/value combination and the term being searched for.
  */
-type Value = Field & {
+export type Value = Field & {
   type: "Value";
   term: string;
 };
 
-/**
- * Represents a combination of two values or expressions with a binary operator.
- */
-type Expression = {
-  type: "Expression";
-  leftOperand?: Value;
-  rightOperand?: Value;
-  value?: Value;
-  operator?: ExpressionBinaryOperator;
-};
-
-/**
- * Represents the parsed input query.
- */
-type Query = {
-  type: "Value" | "Expression";
-  leftOperand?: Query;
-  rightOperand?: Query;
-  value?: Value;
-  operator?: ExpressionBinaryOperator;
-};
 
 /**
  * Represents the parsed input query AST.
  */
-export type ParserResult = typeof Query;
-
-
-// --------------------------------
-const reduceFn = (acc: Query, item: unknown): Query => {
-  const [_, operator, __, b] = item as [any, ExpressionBinaryOperator, any, Query];
-  return { type: "Expression", leftOperand: acc, rightOperand: b, operator };
+export type AST = {
+  type: "Value" | "Expression";
+  leftOperand?: AST;
+  rightOperand?: AST;
+  value?: Value;
+  operator?: ExpressionBinaryOperator;
 };
-// --------------------------------
 
 
 
@@ -287,7 +264,11 @@ function peg$parse(input: string, options?: ParseOptions) {
 
   const peg$c0 = peg$otherExpectation("Query");
   const peg$c1 = function(head: any, tail: any): any {
-        return tail.reduce(reduceFn, head);
+        return tail.reduce((acc, item) => {
+        const [_, operator, __, b] = item;
+        return { type: "Expression", leftOperand: acc, rightOperand: b, operator };
+        }, head);
+
     };
   const peg$c2 = peg$otherExpectation("Expression");
   const peg$c3 = function(q: any): any { return q; };

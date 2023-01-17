@@ -1,13 +1,13 @@
 
 //TODO
 import { parse } from "./parser";
-import type { ParserResult } from "./parser";
+import type { AST } from "./parser";
 
 const query =
   '123 OR vb < 412 AND x = 23123 AND v = 23 OR v = "asdasdsa asdasd \\" asd"';
 
 
-const expectedResult: ParserResult = {
+const expectedResult: AST = {
   type: "Expression",
   leftOperand: {
     type: "Expression",
