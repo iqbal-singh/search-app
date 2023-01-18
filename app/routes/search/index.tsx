@@ -70,9 +70,7 @@ export default function Index() {
         />
       </Form>
       {errorMessage && <pre className="">{errorMessage}</pre>}
-
       <QueryBuilder node={ast} />
-      {/* {ast && <pre className="">{JSON.stringify(data.ast, null, 2)}</pre>} */}
     </>
   );
 }

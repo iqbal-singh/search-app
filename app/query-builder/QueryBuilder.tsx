@@ -1,5 +1,5 @@
 import { styled } from "@mui/system";
-import { Box, Chip, Container } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 
 import type {
   FieldOperator,
@@ -11,18 +11,23 @@ const FIELD_OPERATORS: FieldOperator[] = ["=", "!=", ":", "<", ">", "<=", ">="];
 const BINARY_OPERATORS: ExpressionBinaryOperator[] = ["AND", "OR"];
 
 type QueryBuilderProps = {
-  node: AST | undefined;
+  node?: AST;
+  depth?: number;
 };
 
 const ValueChip = styled(Chip)({
-  marginRight: 12
+  padding: 4,
+  marginTop: 12,
+  marginRight: 12,
 });
 
 const ExpressionChip = styled(Chip)({
-  marginRight:12
+  padding: 8,
+  marginTop: 12,
+  marginRight: 12,
 });
 
-function QueryBuilder({ node }: QueryBuilderProps) {
+function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
   if (!node) {
     return null;
   }
@@ -32,11 +37,29 @@ function QueryBuilder({ node }: QueryBuilderProps) {
     const { term, fieldName, fieldOperator } = value!;
     return (
       <ValueChip
-        clickable
         variant="outlined"
         label={
           <>
-            {fieldName || ""} <b>{fieldOperator || ""}</b> {term || ""}
+            {fieldName && (
+              <Typography variant="body2" component="span">
+                {fieldName}
+              </Typography>
+            )}
+            {fieldOperator && (
+              <Typography
+                variant="body2"
+                component="span"
+                color="primary"
+                sx={{ mx: 1, fontWeight: "bold" }}
+              >
+                {fieldOperator}
+              </Typography>
+            )}
+            {term && (
+              <Typography variant="body2" component="span">
+                {term}
+              </Typography>
+            )}
           </>
         }
       />
@@ -46,11 +69,21 @@ function QueryBuilder({ node }: QueryBuilderProps) {
   if (node.type === "Expression") {
     const { leftOperand, rightOperand, operator } = node;
     return (
-      <>
-        <QueryBuilder node={leftOperand} />
-        <ExpressionChip color="primary" variant="filled" label={operator} />
-        <QueryBuilder node={rightOperand} />
-      </>
+      <Box
+        p={1}
+        my={2}
+        
+        border="1px solid #ccc"
+        borderRadius={1}
+      >
+        <QueryBuilder node={leftOperand} depth={depth + 1} />
+        <ExpressionChip
+          color={operator === "AND" ? "primary" : "success"}
+          variant="filled"
+          label={<Typography variant="body2">{operator}</Typography>}
+        />
+        <QueryBuilder node={rightOperand} depth={depth + 1} />
+      </Box>
     );
   }
 
