@@ -6,6 +6,7 @@ import type {
   ExpressionBinaryOperator,
   AST,
 } from "~/lib/query-lang/parser";
+import { useState } from "react";
 
 const FIELD_OPERATORS: FieldOperator[] = ["=", "!=", ":", "<", ">", "<=", ">="];
 const BINARY_OPERATORS: ExpressionBinaryOperator[] = ["AND", "OR"];
@@ -28,6 +29,8 @@ const ExpressionChip = styled(Chip)({
 });
 
 function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
+  const [selectedExpression, setSelectedExpression] = useState(-1);
+
   if (!node) {
     return null;
   }
@@ -68,12 +71,12 @@ function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
 
   if (node.type === "Expression") {
     const { leftOperand, rightOperand, operator } = node;
+    
     return (
       <Box
-        p={1}
         my={2}
-        
-        border="1px solid #ccc"
+        p={1 + depth}
+        border={`1px solid ${selectedExpression === depth ? 'green' : '#ccc'}`}
         borderRadius={1}
       >
         <QueryBuilder node={leftOperand} depth={depth + 1} />
@@ -81,6 +84,13 @@ function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
           color={operator === "AND" ? "primary" : "success"}
           variant="filled"
           label={<Typography variant="body2">{operator}</Typography>}
+          clickable
+          onMouseOver={(e) => {
+            setSelectedExpression(depth);
+          }}
+          onMouseOut={(e) => {
+            setSelectedExpression(-1);
+          }}
         />
         <QueryBuilder node={rightOperand} depth={depth + 1} />
       </Box>
