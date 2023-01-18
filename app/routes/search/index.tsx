@@ -60,6 +60,7 @@ export default function Index() {
     <Container maxWidth="xl">
       <Form method="get">
         <TextField
+          autoComplete="off"
           fullWidth
           size="small"
           name="query"

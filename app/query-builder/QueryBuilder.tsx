@@ -1,5 +1,5 @@
 import { styled } from "@mui/system";
-import { Box, Chip, Typography } from "@mui/material";
+import { Box, Button, Chip, Typography } from "@mui/material";
 
 import type {
   FieldOperator,
@@ -7,14 +7,6 @@ import type {
   AST,
 } from "~/lib/query-lang/parser";
 import { useState } from "react";
-
-const FIELD_OPERATORS: FieldOperator[] = ["=", "!=", ":", "<", ">", "<=", ">="];
-const BINARY_OPERATORS: ExpressionBinaryOperator[] = ["AND", "OR"];
-
-type QueryBuilderProps = {
-  node?: AST;
-  depth?: number;
-};
 
 const ValueChip = styled(Chip)({
   padding: 4,
@@ -28,7 +20,18 @@ const ExpressionChip = styled(Chip)({
   marginRight: 12,
 });
 
+
+const FIELD_OPERATORS: FieldOperator[] = ["=", "!=", ":", "<", ">", "<=", ">="];
+const BINARY_OPERATORS: ExpressionBinaryOperator[] = ["AND", "OR"];
+
+
+type QueryBuilderProps = {
+  node?: AST;
+  depth?: number;
+};
+
 function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
+  const [editMode, setEditMode] = useState(false);
   const [selectedExpression, setSelectedExpression] = useState(-1);
 
   if (!node) {
@@ -44,7 +47,11 @@ function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
         label={
           <>
             {fieldName && (
-              <Typography variant="body2" component="span">
+              <Typography
+                variant="body2"
+                component="span"
+                sx={{ fontWeight: "bold" }}
+              >
                 {fieldName}
               </Typography>
             )}
@@ -71,12 +78,11 @@ function QueryBuilder({ node, depth = 0 }: QueryBuilderProps) {
 
   if (node.type === "Expression") {
     const { leftOperand, rightOperand, operator } = node;
-    
     return (
       <Box
         my={2}
-        p={1 + depth}
-        border={`1px solid ${selectedExpression === depth ? 'green' : '#ccc'}`}
+        p={depth + 1}
+        border={`1px solid ${selectedExpression === depth ? "green" : "#ccc"}`}
         borderRadius={1}
       >
         <QueryBuilder node={leftOperand} depth={depth + 1} />
